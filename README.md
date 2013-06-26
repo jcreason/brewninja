@@ -1,4 +1,7 @@
-brewninja
-=========
+BrewNinja Client
+================
 
-Java project to automate our Brutus 10 brew stand
+Java project to automate brewing on my [Brutus 10](http://www.alenuts.com/Alenuts/brutus.html) brew stand.
+
+Much more to come...
+
