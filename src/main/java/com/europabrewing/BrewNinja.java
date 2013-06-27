@@ -1,3 +1,5 @@
+package com.europabrewing;
+
 /*
  * Copyright (c) 2013 Jarett Creason
  *

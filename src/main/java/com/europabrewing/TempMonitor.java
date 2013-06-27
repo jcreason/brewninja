@@ -1,4 +1,4 @@
-/*
+package com.europabrewing;/*
  * Copyright (c) 2013 Jarett Creason
  *
  * This file is part of BrewNinja.
