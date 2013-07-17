@@ -19,9 +19,27 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+
+		<!-- Raspberry Pi for Java project - http://pi4j.com -->
+		<repository>
+			<id>oss-snapshots-repo</id>
+			<name>Sonatype OSS Maven Repository</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<dependencies>
+
+		<!-- Raspberry Pi for Java project - http://pi4j.com -->
+		<dependency>
+			<groupId>com.pi4j</groupId>
+			<artifactId>pi4j-core</artifactId>
+			<version>0.0.5</version>
+		</dependency>
 
 		<!-- Google's helpful set of helpers -->
 		<dependency>
@@ -46,9 +64,14 @@
 
 		<!-- Logging -->
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.0-beta8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.0-beta8</version>
 		</dependency>
 
 	</dependencies>
@@ -56,7 +79,7 @@
 	<build>
 		<directory>target</directory>
 		<outputDirectory>target/classes</outputDirectory>
-		<finalName>${artifactId}-${version}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<testOutputDirectory>target/test-classes</testOutputDirectory>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
@@ -70,6 +93,34 @@
 				<directory>src/test/resources</directory>
 			</testResource>
 		</testResources>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>config</id>
+						<phase>compile</phase>
+						<configuration>
+							<tasks>
+								<!-- copy over the config files before the build based on the defined properties variable -->
+								<copy
+										file="${basedir}/src/main/resources/hibernate.${properties}.cfg.xml"
+										tofile="${basedir}/target/classes/hibernate.cfg.xml"/>
+
+								<copy
+										file="${basedir}/src/main/resources/log4j2.${properties}.xml"
+										tofile="${basedir}/target/classes/log4j2.xml"/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
 	</build>
 
 </project>

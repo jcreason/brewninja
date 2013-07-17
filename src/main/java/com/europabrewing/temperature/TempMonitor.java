@@ -1,5 +1,5 @@
-package com.europabrewing;/*
- * Copyright (c) 2013 Jarett Creason
+/*
+ * Copyright © 2013 Jarett Creason
  *
  * This file is part of BrewNinja.
  *
@@ -14,8 +14,11 @@ package com.europabrewing;/*
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with BrewNinja.  If not, see <http://www.gnu.org/licenses/>.
+ * along with BrewNinja in the file named COPYING in the root directory.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.europabrewing.temperature;
 
 /**
  * @author jcreason - jcreason@gmail.com
@@ -23,8 +26,10 @@ package com.europabrewing;/*
  *
  * Please see the README and/or documentation associated
  */
-public class TempMonitor {
+public abstract class TempMonitor {
 
 	public TempMonitor() {
 	}
+
+	public abstract Double getTemp();
 }

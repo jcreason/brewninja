@@ -1,7 +1,5 @@
-package com.europabrewing;
-
 /*
- * Copyright (c) 2013 Jarett Creason
+ * Copyright © 2013 Jarett Creason
  *
  * This file is part of BrewNinja.
  *
@@ -16,8 +14,18 @@ package com.europabrewing;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with BrewNinja.  If not, see <http://www.gnu.org/licenses/>.
+ * along with BrewNinja in the file named COPYING in the root directory.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.europabrewing;
+
+import com.europabrewing.util.HibernateUtil;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
 
 /**
  * @author jcreason - jcreason@gmail.com
@@ -27,12 +35,32 @@ package com.europabrewing;
  */
 public class BrewNinja {
 
+	private final static Logger logger = LogManager.getLogger(BrewNinja.class.getName());
+
+	public final GpioController gpioController;
+
+	public BrewNinja() {
+		// create gpio controller instance
+		gpioController = GpioFactory.getInstance();
+	}
+
 	/**
 	 * MAIN
 	 *
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
+		System.out.println("hello world");
+
+		logger.debug("Going to get the hibernate session");
+		Session session = HibernateUtil.getSession();
+
+		logger.debug("running query...");
+
+		session.createQuery("SELECT 1 ").list();
+		session.close();
+
+		logger.debug("closed session");
 	}
 
 }

@@ -3,3 +3,9 @@
 # Package Files #
 *.war
 *.ear
+
+target/
+
+# custom property files
+hibernate.*.cfg.xml
+log4j.*.properties
