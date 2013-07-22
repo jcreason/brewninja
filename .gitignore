@@ -5,6 +5,7 @@
 *.ear
 
 target/
+logs/
 
 # custom property files
 hibernate.*.cfg.xml

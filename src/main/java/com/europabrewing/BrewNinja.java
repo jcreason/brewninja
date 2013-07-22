@@ -52,12 +52,18 @@ public class BrewNinja {
 	public static void main(String[] args) {
 		System.out.println("hello world");
 
+		logger.error("Error message");
+		logger.warn("Warn message");
+		logger.info("Info message");
+		logger.debug("Debug message");
+		logger.trace("Trace message");
+
 		logger.debug("Going to get the hibernate session");
 		Session session = HibernateUtil.getSession();
 
 		logger.debug("running query...");
 
-		session.createQuery("SELECT 1 ").list();
+//		session.createQuery("SELECT * FROM burner ").list();
 		session.close();
 
 		logger.debug("closed session");

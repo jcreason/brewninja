@@ -19,15 +19,35 @@
   ~ If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<configuration status="DEBUG">
+<configuration status="WARN">
+
 	<appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
 		</Console>
+
+		<RollingFile name="MyFileAppender"
+								 fileName="logs/app.log"
+								 filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<pattern>%d %p %C{1.} [%t] %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<OnStartupTriggeringPolicy/>
+				<TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+		</RollingFile>
 	</appenders>
+
 	<loggers>
-		<root level="error">
+		<logger name="org.hibernate" level="error">
+			<appender-ref ref="Console"/>
+		</logger>
+
+		<root level="Trace">
 			<appender-ref ref="Console"/>
 		</root>
 	</loggers>
+
 </configuration>

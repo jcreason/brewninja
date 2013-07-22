@@ -106,11 +106,11 @@
 								<!-- copy over the config files before the build based on the defined properties variable -->
 								<copy
 										file="${basedir}/src/main/resources/hibernate.${properties}.cfg.xml"
-										tofile="${basedir}/target/classes/hibernate.cfg.xml"/>
+										tofile="${basedir}/src/main/resources/hibernate.cfg.xml"/>
 
 								<copy
 										file="${basedir}/src/main/resources/log4j2.${properties}.xml"
-										tofile="${basedir}/target/classes/log4j2.xml"/>
+										tofile="${basedir}/src/main/resources/log4j2.xml"/>
 							</tasks>
 						</configuration>
 						<goals>
