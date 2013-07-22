@@ -8,5 +8,8 @@ target/
 logs/
 
 # custom property files
-hibernate.*.cfg.xml
-log4j.*.properties
+hibernate.jcreason.cfg.xml
+hibernate.cfg.xml
+log4j2.jcreason.xml
+log4j2.xml
+

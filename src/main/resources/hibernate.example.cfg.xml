@@ -27,8 +27,8 @@
 
 		<property name="connection.url">jdbc:mysql://localhost/brewninja</property>
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-		<property name="connection.username">brewninja</property>
-		<property name="connection.password">qcp4457bBrJ060z</property>
+		<property name="connection.username"></property>
+		<property name="connection.password"></property>
 		<property name="connection.pool_size">10</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
@@ -45,7 +45,7 @@
 
 		<!-- DB schema will be updated if needed -->
 		<!-- <property name="hbm2ddl.auto">update</property> -->
-		<!--<property name="hbm2ddl.auto">create</property>-->
+		<property name="hbm2ddl.auto">create</property>
 
 	</session-factory>
 </hibernate-configuration>

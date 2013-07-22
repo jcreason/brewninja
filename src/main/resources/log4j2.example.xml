@@ -19,7 +19,7 @@
   ~ If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<configuration status="WARN">
+<configuration status="WARN" monitorInterval="30">
 
 	<appenders>
 		<Console name="Console" target="SYSTEM_OUT">
