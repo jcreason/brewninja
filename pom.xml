@@ -69,6 +69,13 @@
 			<version>0.9.1.2</version>
 		</dependency>
 
+		<!-- Database version-ing -->
+		<dependency>
+			<groupId>com.googlecode.flyway</groupId>
+			<artifactId>flyway-maven-plugin</artifactId>
+			<version>2.2</version>
+		</dependency>
+
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -81,6 +88,13 @@
 			<version>2.0-beta8</version>
 		</dependency>
 
+		<!-- Bind hibernate logs to log4j -->
+		<!--<dependency>-->
+			<!--<groupId>org.slf4j</groupId>-->
+			<!--<artifactId>slf4j-log4j12</artifactId>-->
+			<!--<version>2.0-beta8</version>-->
+		<!--</dependency>-->
+
 	</dependencies>
 
 	<build>
@@ -90,11 +104,13 @@
 		<testOutputDirectory>target/test-classes</testOutputDirectory>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
+
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
+
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
@@ -102,6 +118,24 @@
 		</testResources>
 
 		<plugins>
+			<plugin>
+				<groupId>com.googlecode.flyway</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<driver>com.mysql.jdbc.Driver</driver>
+					<url>jdbc:mysql://localhost/brewninja</url>
+					<!-- put these in your maven settings.xml file
+					<user></user><password></password>
+					-->
+					<serverId>brewninja-flyway-db</serverId>
+					<initVersion>1</initVersion>
+					<locations>
+						<location>filesystem:src/main/resources/db/migration</location>
+					</locations>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
