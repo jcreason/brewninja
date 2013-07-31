@@ -20,12 +20,17 @@
 
 package com.europabrewing;
 
+import com.europabrewing.daos.BurnerDAOHibernate;
+import com.europabrewing.models.Burner;
 import com.europabrewing.util.HibernateUtil;
+import com.google.common.base.Joiner;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+
+import java.util.List;
 
 /**
  * @author jcreason - jcreason@gmail.com
@@ -37,11 +42,18 @@ public class BrewNinja {
 
 	private final static Logger logger = LogManager.getLogger(BrewNinja.class.getName());
 
-	public final GpioController gpioController;
+	private final GpioController gpioController;
+
+	private List<Burner> burners;
+
 
 	public BrewNinja() {
 		// create gpio controller instance
-		gpioController = GpioFactory.getInstance();
+		this.gpioController = GpioFactory.getInstance();
+
+		initializeEquipmunk();
+
+		logger.trace("All burners configured: " + Joiner.on("\n").join(burners));
 	}
 
 	/**
@@ -50,23 +62,23 @@ public class BrewNinja {
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
-		System.out.println("hello world");
+		BrewNinja brewNinja = new BrewNinja();
 
-		logger.error("Error message");
-		logger.warn("Warn message");
-		logger.info("Info message");
-		logger.debug("Debug message");
-		logger.trace("Trace message");
+	}
 
-		logger.debug("Going to get the hibernate session");
+	/**
+	 * Initialize all of the equipment including Burners, liquid Pumps,
+	 * and TempMonitors
+	 */
+	private void initializeEquipmunk() {
+		logger.trace("Retrieving all equipment from database (burners, pumps and valves)");
+
 		Session session = HibernateUtil.getSession();
+		BurnerDAOHibernate burnerDao = new BurnerDAOHibernate(session);
+		this.burners = burnerDao.getEnabledBurners();
 
-		logger.debug("running query...");
 
-//		session.createQuery("SELECT * FROM burner ").list();
 		session.close();
-
-		logger.debug("closed session");
 	}
 
 }

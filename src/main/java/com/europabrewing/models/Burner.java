@@ -102,6 +102,11 @@ public class Burner {
 	}
 
 	@Override
+	public String toString() {
+		return String.format("%s - %s(%s)", getName(), getDescription(), getDisabled() ? "disabled" : "enabled");
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;

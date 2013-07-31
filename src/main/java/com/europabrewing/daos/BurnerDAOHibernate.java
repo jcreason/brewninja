@@ -18,18 +18,35 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.europabrewing.temperature;
+package com.europabrewing.daos;
+
+import com.europabrewing.models.Burner;
+import com.europabrewing.util.HibernateUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+
+import java.util.List;
 
 /**
  * @author jcreason - jcreason@gmail.com
- * @date June 2013
+ * @date July 2013
  *
  * Please see the README and/or documentation associated
  */
-public abstract class TempMonitor {
+public class BurnerDAOHibernate implements BurnerDAO {
 
-	public TempMonitor() {
+
+	private final static Logger logger = LogManager.getLogger(BurnerDAOHibernate.class.getName());
+
+	private final Session session;
+
+	public BurnerDAOHibernate(Session session) {
+		this.session = session;
 	}
 
-	public abstract Double getTemp();
+	@Override
+	public List<Burner> getEnabledBurners() {
+		return HibernateUtil.listAndCast(session.createQuery("from Burner where disabled = false "));
+	}
 }

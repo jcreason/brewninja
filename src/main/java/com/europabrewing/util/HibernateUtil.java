@@ -29,6 +29,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,6 +81,19 @@ public class HibernateUtil {
 	 */
 	public static Session getSession() throws HibernateException {
 		return getSessionFactory().openSession();
+	}
+
+	/**
+	 * Helper function to have one place to suppress warnings
+	 *
+	 * @param q
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> List<T> listAndCast(Query q) {
+		@SuppressWarnings("unchecked")
+		List list = q.list();
+		return list;
 	}
 
 	/**

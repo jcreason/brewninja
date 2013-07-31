@@ -102,6 +102,21 @@ public class TempMonitor {
 		this.burner = burner;
 	}
 
+	/**
+	 * Return the current temperature of this TempMonitor
+	 *
+	 * @return
+	 */
+	public Double retrieveTemp() {
+		// TODO
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s - %d(%s)", getName(), getMonitorId(), getDisabled() ? "disabled" : "enabled");
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {

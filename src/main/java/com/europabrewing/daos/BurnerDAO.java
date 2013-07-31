@@ -18,7 +18,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.europabrewing.temperature;
+package com.europabrewing.daos;
+
+import com.europabrewing.models.Burner;
+
+import java.util.List;
 
 /**
  * @author jcreason - jcreason@gmail.com
@@ -26,14 +30,12 @@ package com.europabrewing.temperature;
  *
  * Please see the README and/or documentation associated
  */
-public class DS18B20 extends TempMonitor {
+public interface BurnerDAO {
 
-	public DS18B20() {
-	}
-
-	@Override
-	public Double getTemp() {
-		// TODO
-		return null;
-	}
+	/**
+	 * Get a List of all Burners that are currently enabled
+	 *
+	 * @return
+	 */
+	public List<Burner> getEnabledBurners();
 }
