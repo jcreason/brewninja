@@ -42,18 +42,28 @@ public class BrewNinja {
 
 	private final static Logger logger = LogManager.getLogger(BrewNinja.class.getName());
 
+	/** The GPIO controller.  If it's null, means we're running in development mode */
 	private final GpioController gpioController;
 
 	private List<Burner> burners;
 
-
+	/**
+	 * Build the class the manages it all.
+	 * On construction, all equipment is loaded in from the database
+	 */
 	public BrewNinja() {
 		// create gpio controller instance
-		this.gpioController = GpioFactory.getInstance();
+		GpioController tmpGpioCon = null;
+		try {
+			tmpGpioCon = GpioFactory.getInstance();
+		} catch (UnsatisfiedLinkError e) {
+			logger.error("Looks like you might not be running on a Raspberry Pi architecture.  Running in DEV mode.");
+		}
+		this.gpioController = tmpGpioCon;
 
 		initializeEquipmunk();
 
-		logger.trace("All burners configured: " + Joiner.on("\n").join(burners));
+		logger.trace("All burners configured:\n\t * " + Joiner.on("\n\t * ").join(burners));
 	}
 
 	/**

@@ -41,13 +41,18 @@
 	</appenders>
 
 	<loggers>
+		<root level="Warn">
+			<appender-ref ref="MyFileAppender"/>
+		</root>
+
 		<logger name="org.hibernate" level="error">
 			<appender-ref ref="MyFileAppender"/>
 		</logger>
 
-		<root level="warn">
+		<logger name="org.jboss.logging" level="error">
 			<appender-ref ref="MyFileAppender"/>
-		</root>
+		</logger>
+
 	</loggers>
 
 </configuration>

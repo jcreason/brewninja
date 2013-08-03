@@ -53,7 +53,7 @@
 
 		<!-- DB schema will be updated if needed -->
 		<!-- <property name="hbm2ddl.auto">update</property> -->
-		<property name="hbm2ddl.auto">create</property>
+		<!--<property name="hbm2ddl.auto">create</property>-->
 
 	</session-factory>
 </hibernate-configuration>

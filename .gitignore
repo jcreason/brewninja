@@ -7,9 +7,9 @@
 target/
 logs/
 
-# custom property files
-hibernate.jcreason.cfg.xml
-hibernate.cfg.xml
-log4j2.jcreason.xml
-log4j2.xml
+# pay no attention to properties files except the example versions
+hibernate*.cfg.xml
+log4j2*.xml
+!hibernate.example.cfg.xml
+!log4j2.example.xml
 
