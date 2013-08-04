@@ -66,6 +66,7 @@ public abstract class PinController {
 	 * @return
 	 */
 	public void turnOn() {
+		System.out.printf("Turning on %s %s (%s)%n", this.getClass().getSimpleName(), getName(), getGpio());
 		pin.high();
 	}
 
@@ -75,6 +76,7 @@ public abstract class PinController {
 	 * @return
 	 */
 	public void turnOff() {
+		System.out.printf("Turning off %s %s (%s)%n", this.getClass().getSimpleName(), getName(), getGpio());
 		pin.low();
 	}
 
@@ -84,6 +86,7 @@ public abstract class PinController {
 	 * @return
 	 */
 	public void toggle() {
+		System.out.printf("Toggling %s %s (%s)%n", this.getClass().getSimpleName(), getName(), getGpio());
 		pin.toggle();
 	}
 

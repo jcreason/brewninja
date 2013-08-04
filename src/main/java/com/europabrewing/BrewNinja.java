@@ -130,28 +130,28 @@ public class BrewNinja {
 		System.out.println("Turning on all burners");
 		for (Burner burner : burners) {
 			burner.turnOn();
-			Thread.sleep(100);
+			Thread.sleep(3000);
 		}
-		Thread.sleep(500);
+		Thread.sleep(10000);
 
 		System.out.println("Turning on all pumps");
 		for (Pump pump : pumps) {
 			pump.turnOn();
-			Thread.sleep(100);
+			Thread.sleep(3000);
 		}
-		Thread.sleep(500);
+		Thread.sleep(10000);
 
 		System.out.println("Turning off all burners");
 		for (Burner burner : burners) {
 			burner.turnOff();
-			Thread.sleep(100);
+			Thread.sleep(3000);
 		}
-		Thread.sleep(500);
+		Thread.sleep(10000);
 
 		System.out.println("Turning off all pumps");
 		for (Pump pump : pumps) {
 			pump.turnOff();
-			Thread.sleep(100);
+			Thread.sleep(3000);
 		}
 	}
 

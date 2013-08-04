@@ -111,6 +111,11 @@ public class Gpio {
 	}
 
 	@Override
+	public String toString() {
+		return String.format("Gpio %d (%s)", pin, raspPiName);
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
