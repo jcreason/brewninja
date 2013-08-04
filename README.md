@@ -20,8 +20,8 @@ the features of the program are severely limited.
 ###Requirements
 - Raspberry Pi<br/>
 I used [Raspbian "wheezy"](http://www.raspberrypi.org/downloads) as my install image.  All
-of this should be possible regardless of which distro you use, but do be aware of the hard
-point vs. soft point issues...
+of this should be possible regardless of which distro you use, but do be aware of the hardfloat
+vs. softfloat issues...
 
 - BrewNinja Code<br/>
 You know, clone the git repo or download the source code.
@@ -29,7 +29,7 @@ You know, clone the git repo or download the source code.
 - Java 7+<br/>
 I am using Java 8 downloaded from [here](http://jdk8.java.net/download.html).  It is an
 early access release, but there is a specialized download to run on the
-hard floating point ARM architecture.
+hardfloat ARM architecture.
 [This guide](https://wiki.openjdk.java.net/display/OpenJFX/OpenJFX+on+the+Raspberry+Pi)
 was handy for me to get it up and running.  Potentially you could use OpenJDK 7+, but it
 is purportedly much slower and I have not yet tried that.
