@@ -20,8 +20,11 @@
 
 package com.europabrewing.models;
 
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiPin;
+
 import javax.persistence.*;
-import java.util.Collection;
+import java.lang.reflect.Field;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -32,16 +35,33 @@ import static javax.persistence.GenerationType.IDENTITY;
  * Please see the README and/or documentation associated
  */
 @Entity
+@Table(name = "gpio")
 public class Gpio {
+
 	private Integer gpioId;
 
 	private String raspPiName;
 
 	private Integer pin;
 
-	private Collection<Pump> pumps;
+	private Pump pump;
 
-	private Collection<Valve> valves;
+	private Burner burner;
+
+	public Pin convertToPiPin() {
+		try {
+			Field raspPiPin = RaspiPin.class.getField(raspPiName.toUpperCase());
+			return (Pin) raspPiPin.get(null);
+		} catch (NoSuchFieldException e) {
+			return null;
+		} catch (IllegalAccessException e) {
+			return null;
+		}
+	}
+
+	/*
+	 * HIBERNATE GETTERS & SETTERS
+	 */
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -72,22 +92,22 @@ public class Gpio {
 		this.pin = pin;
 	}
 
-	@OneToMany(mappedBy = "gpio")
-	public Collection<Pump> getPumps() {
-		return pumps;
+	@OneToOne(mappedBy = "gpio", optional = true)
+	public Pump getPump() {
+		return pump;
 	}
 
-	public void setPumps(Collection<Pump> pumpsByGpioId) {
-		this.pumps = pumpsByGpioId;
+	public void setPump(Pump pump) {
+		this.pump = pump;
 	}
 
-	@OneToMany(mappedBy = "gpio")
-	public Collection<Valve> getValves() {
-		return valves;
+	@OneToOne(mappedBy = "gpio", optional = true)
+	public Burner getBurner() {
+		return burner;
 	}
 
-	public void setValves(Collection<Valve> valves) {
-		this.valves = valves;
+	public void setBurner(Burner burner) {
+		this.burner = burner;
 	}
 
 	@Override

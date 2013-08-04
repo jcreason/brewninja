@@ -33,6 +33,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "temp_monitor")
 public class TempMonitor {
+
 	private Integer monitorId;
 
 	private String name;
@@ -44,6 +45,21 @@ public class TempMonitor {
 	private Boolean disabled;
 
 	private Burner burner;
+
+	/**
+	 * Return the current temperature of this TempMonitor
+	 *
+	 * @return the current temp in Fahrenheit
+	 */
+	@Transient
+	public Double getTemp() {
+		// TODO
+		return null;
+	}
+
+	/*
+	 * HIBERNATE GETTERS & SETTERS
+	 */
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -92,24 +108,13 @@ public class TempMonitor {
 		this.disabled = disabled;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = "burner_id", referencedColumnName = "burner_id")
+	@OneToOne(mappedBy = "tempMonitor")
 	public Burner getBurner() {
 		return burner;
 	}
 
 	public void setBurner(Burner burner) {
 		this.burner = burner;
-	}
-
-	/**
-	 * Return the current temperature of this TempMonitor
-	 *
-	 * @return
-	 */
-	public Double retrieveTemp() {
-		// TODO
-		return null;
 	}
 
 	@Override

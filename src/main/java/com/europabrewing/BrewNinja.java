@@ -43,23 +43,30 @@ public class BrewNinja {
 	private final static Logger logger = LogManager.getLogger(BrewNinja.class.getName());
 
 	/** The GPIO controller.  If it's null, means we're running in development mode */
-	private final GpioController gpioController;
+	private static final GpioController gpioController;
 
 	private List<Burner> burners;
+
+	static {
+		// create gpio controller instance
+		GpioController tmpGpioCon = null;
+		try {
+			try {
+				tmpGpioCon = GpioFactory.getInstance();
+			} catch (Exception e) {
+				logger.error("another exception");
+			}
+		} catch (UnsatisfiedLinkError e) {
+			logger.error("Looks like you might not be running on a Raspberry Pi architecture.  Running in DEV mode.");
+		}
+		gpioController = tmpGpioCon;
+	}
 
 	/**
 	 * Build the class the manages it all.
 	 * On construction, all equipment is loaded in from the database
 	 */
 	public BrewNinja() {
-		// create gpio controller instance
-		GpioController tmpGpioCon = null;
-		try {
-			tmpGpioCon = GpioFactory.getInstance();
-		} catch (UnsatisfiedLinkError e) {
-			logger.error("Looks like you might not be running on a Raspberry Pi architecture.  Running in DEV mode.");
-		}
-		this.gpioController = tmpGpioCon;
 
 		initializeEquipmunk();
 
@@ -76,19 +83,29 @@ public class BrewNinja {
 
 	}
 
+	/** Shut everything down */
+	public void shutdown() {
+		if (null != gpioController) {
+			gpioController.shutdown();
+		}
+	}
+
 	/**
-	 * Initialize all of the equipment including Burners, liquid Pumps,
-	 * and TempMonitors
+	 * Initialize all of the equipment including
+	 * Burners & liquid Pumps
 	 */
 	private void initializeEquipmunk() {
-		logger.trace("Retrieving all equipment from database (burners, pumps and valves)");
+		logger.trace("Retrieving all equipment from database");
 
 		Session session = HibernateUtil.getSession();
 		BurnerDAOHibernate burnerDao = new BurnerDAOHibernate(session);
 		this.burners = burnerDao.getEnabledBurners();
-
+		if (null != gpioController) {
+			for (Burner burner : burners) {
+				burner.couplePin(gpioController);
+			}
+		}
 
 		session.close();
 	}
-
 }

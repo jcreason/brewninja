@@ -49,7 +49,6 @@
 		<mapping class="com.europabrewing.models.Gpio"/>
 		<mapping class="com.europabrewing.models.Pump"/>
 		<mapping class="com.europabrewing.models.TempMonitor"/>
-		<mapping class="com.europabrewing.models.Valve"/>
 
 		<!-- DB schema will be updated if needed -->
 		<!-- <property name="hbm2ddl.auto">update</property> -->

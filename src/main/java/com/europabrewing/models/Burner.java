@@ -20,8 +20,12 @@
 
 package com.europabrewing.models;
 
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinState;
+
 import javax.persistence.*;
-import java.util.Collection;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -32,7 +36,9 @@ import static javax.persistence.GenerationType.IDENTITY;
  * Please see the README and/or documentation associated
  */
 @Entity
+@Table(name = "burner")
 public class Burner {
+
 	private Integer burnerId;
 
 	private String name;
@@ -41,9 +47,71 @@ public class Burner {
 
 	private Boolean disabled;
 
-	private Collection<TempMonitor> tempMonitors;
+	private TempMonitor tempMonitor;
 
-	private Collection<Valve> valves;
+	private Gpio gpio;
+
+	@Transient
+	private GpioPinDigitalOutput pin;
+
+	public Burner() {
+	}
+
+	/**
+	 * Couple this burner with the GPIO pin on the RaspPi board
+	 *
+	 * @param gpioController use this controller
+	 * @return result of coupling
+	 */
+	public boolean couplePin(GpioController gpioController) {
+		Pin piPin = gpio.convertToPiPin();
+		if (null == piPin) {
+			return false;
+		}
+		this.pin = gpioController.provisionDigitalOutputPin(piPin, name, PinState.LOW);
+		return true;
+	}
+
+	/**
+	 * Turn this Burner's valve on
+	 *
+	 * @return
+	 */
+	public void turnOn() {
+		pin.high();
+	}
+
+	/**
+	 * Turn this Burner's valve off
+	 *
+	 * @return
+	 */
+	public void turnOff() {
+		pin.low();
+	}
+
+	/**
+	 * Toggle this Burner's valve on or off (whatever it's not now)
+	 *
+	 * @return
+	 */
+	public void toggle() {
+		pin.toggle();
+	}
+
+	/**
+	 * Is this Burner's valve on?
+	 *
+	 * @return
+	 */
+	@Transient
+	public boolean isOn() {
+		return pin.isHigh();
+	}
+
+	/*
+	 * HIBERNATE GETTERS & SETTERS
+	 */
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -83,22 +151,24 @@ public class Burner {
 		this.disabled = disabled;
 	}
 
-	@OneToMany(mappedBy = "burner")
-	public Collection<TempMonitor> getTempMonitors() {
-		return tempMonitors;
+	@OneToOne(optional = true)
+	@JoinColumn(name = "gpio_id", referencedColumnName = "gpio_id")
+	public Gpio getGpio() {
+		return gpio;
 	}
 
-	public void setTempMonitors(Collection<TempMonitor> tempMonitors) {
-		this.tempMonitors = tempMonitors;
+	public void setGpio(Gpio gpio) {
+		this.gpio = gpio;
 	}
 
-	@OneToMany(mappedBy = "burner")
-	public Collection<Valve> getValves() {
-		return valves;
+	@OneToOne(optional = true)
+	@JoinColumn(name = "monitor_id", referencedColumnName = "monitor_id")
+	public TempMonitor getTempMonitor() {
+		return tempMonitor;
 	}
 
-	public void setValves(Collection<Valve> valves) {
-		this.valves = valves;
+	public void setTempMonitor(TempMonitor tempMonitor) {
+		this.tempMonitor = tempMonitor;
 	}
 
 	@Override

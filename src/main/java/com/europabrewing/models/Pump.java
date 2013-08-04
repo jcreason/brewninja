@@ -31,7 +31,9 @@ import static javax.persistence.GenerationType.IDENTITY;
  * Please see the README and/or documentation associated
  */
 @Entity
+@Table(name = "pump")
 public class Pump {
+
 	private Integer pumpId;
 
 	private String name;
@@ -39,6 +41,11 @@ public class Pump {
 	private Boolean disabled;
 
 	private Gpio gpio;
+
+
+	/*
+	 * HIBERNATE GETTERS & SETTERS
+	 */
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -71,7 +78,7 @@ public class Pump {
 		this.disabled = disabled;
 	}
 
-	@ManyToOne
+	@OneToOne(optional = true)
 	@JoinColumn(name = "gpio_id", referencedColumnName = "gpio_id")
 	public Gpio getGpio() {
 		return gpio;
