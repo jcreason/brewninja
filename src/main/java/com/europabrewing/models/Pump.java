@@ -32,15 +32,11 @@ import static javax.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Table(name = "pump")
-public class Pump {
+public class Pump extends PinController {
 
 	private Integer pumpId;
 
-	private String name;
-
 	private Boolean disabled;
-
-	private Gpio gpio;
 
 
 	/*
@@ -59,16 +55,6 @@ public class Pump {
 	}
 
 	@Basic
-	@Column(name = "name", nullable = false, insertable = true, updatable = true, length = 200)
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Basic
 	@Column(name = "disabled", nullable = false, insertable = true, updatable = true)
 	public Boolean getDisabled() {
 		return disabled;
@@ -76,16 +62,6 @@ public class Pump {
 
 	public void setDisabled(Boolean disabled) {
 		this.disabled = disabled;
-	}
-
-	@OneToOne(optional = true)
-	@JoinColumn(name = "gpio_id", referencedColumnName = "gpio_id")
-	public Gpio getGpio() {
-		return gpio;
-	}
-
-	public void setGpio(Gpio gpio) {
-		this.gpio = gpio;
 	}
 
 	@Override

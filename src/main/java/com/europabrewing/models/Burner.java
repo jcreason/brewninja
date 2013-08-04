@@ -20,11 +20,6 @@
 
 package com.europabrewing.models;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.PinState;
-
 import javax.persistence.*;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -37,11 +32,9 @@ import static javax.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Table(name = "burner")
-public class Burner {
+public class Burner extends PinController {
 
 	private Integer burnerId;
-
-	private String name;
 
 	private String description;
 
@@ -49,65 +42,6 @@ public class Burner {
 
 	private TempMonitor tempMonitor;
 
-	private Gpio gpio;
-
-	@Transient
-	private GpioPinDigitalOutput pin;
-
-	public Burner() {
-	}
-
-	/**
-	 * Couple this burner with the GPIO pin on the RaspPi board
-	 *
-	 * @param gpioController use this controller
-	 * @return result of coupling
-	 */
-	public boolean couplePin(GpioController gpioController) {
-		Pin piPin = gpio.convertToPiPin();
-		if (null == piPin) {
-			return false;
-		}
-		this.pin = gpioController.provisionDigitalOutputPin(piPin, name, PinState.LOW);
-		return true;
-	}
-
-	/**
-	 * Turn this Burner's valve on
-	 *
-	 * @return
-	 */
-	public void turnOn() {
-		pin.high();
-	}
-
-	/**
-	 * Turn this Burner's valve off
-	 *
-	 * @return
-	 */
-	public void turnOff() {
-		pin.low();
-	}
-
-	/**
-	 * Toggle this Burner's valve on or off (whatever it's not now)
-	 *
-	 * @return
-	 */
-	public void toggle() {
-		pin.toggle();
-	}
-
-	/**
-	 * Is this Burner's valve on?
-	 *
-	 * @return
-	 */
-	@Transient
-	public boolean isOn() {
-		return pin.isHigh();
-	}
 
 	/*
 	 * HIBERNATE GETTERS & SETTERS
@@ -122,15 +56,6 @@ public class Burner {
 
 	public void setBurnerId(Integer burnerId) {
 		this.burnerId = burnerId;
-	}
-
-	@Column(name = "name", nullable = false, insertable = true, updatable = true, length = 200, unique = true)
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	@Column(name = "description", nullable = true, insertable = true, updatable = true, length = 500)
@@ -149,16 +74,6 @@ public class Burner {
 
 	public void setDisabled(Boolean disabled) {
 		this.disabled = disabled;
-	}
-
-	@OneToOne(optional = true)
-	@JoinColumn(name = "gpio_id", referencedColumnName = "gpio_id")
-	public Gpio getGpio() {
-		return gpio;
-	}
-
-	public void setGpio(Gpio gpio) {
-		this.gpio = gpio;
 	}
 
 	@OneToOne(optional = true)

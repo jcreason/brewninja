@@ -21,15 +21,22 @@
 package com.europabrewing;
 
 import com.europabrewing.daos.BurnerDAOHibernate;
+import com.europabrewing.daos.PumpDAOHibernate;
 import com.europabrewing.models.Burner;
+import com.europabrewing.models.PinController;
+import com.europabrewing.models.Pump;
 import com.europabrewing.util.HibernateUtil;
+import com.europabrewing.util.SysInfoUtil;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -45,7 +52,11 @@ public class BrewNinja {
 	/** The GPIO controller.  If it's null, means we're running in development mode */
 	private static final GpioController gpioController;
 
+	private static final boolean DEV_MODE;
+
 	private List<Burner> burners;
+
+	private List<Pump> pumps;
 
 	static {
 		// create gpio controller instance
@@ -60,17 +71,28 @@ public class BrewNinja {
 			logger.error("Looks like you might not be running on a Raspberry Pi architecture.  Running in DEV mode.");
 		}
 		gpioController = tmpGpioCon;
+
+		DEV_MODE = null == gpioController;
 	}
+
 
 	/**
 	 * Build the class the manages it all.
 	 * On construction, all equipment is loaded in from the database
 	 */
 	public BrewNinja() {
-
 		initializeEquipmunk();
 
 		logger.trace("All burners configured:\n\t * " + Joiner.on("\n\t * ").join(burners));
+
+		if (!DEV_MODE) {
+			try {
+				SysInfoUtil.logInfo();
+			} catch (IOException | InterruptedException | ParseException e) {
+				logger.warn("Exception thrown while trying to log system info.\n", e);
+			}
+		}
+
 	}
 
 	/**
@@ -79,8 +101,58 @@ public class BrewNinja {
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
-		BrewNinja brewNinja = new BrewNinja();
+		BrewNinja brewNinja = null;
 
+		try {
+			brewNinja = new BrewNinja();
+
+			brewNinja.testPinControllers();
+
+		} catch (Exception t) {
+			if (brewNinja != null) {
+				brewNinja.shutdown();
+			}
+		}
+	}
+
+	/**
+	 * Test all of the PinControllers by turning them on, then back off.
+	 * Prints to STDOUT
+	 *
+	 * @throws InterruptedException
+	 */
+	public void testPinControllers() throws InterruptedException {
+		if (DEV_MODE) {
+			System.out.println("Running in DEV mode, not going to test pins we don't have...");
+			return;
+		}
+
+		System.out.println("Turning on all burners");
+		for (Burner burner : burners) {
+			burner.turnOn();
+			Thread.sleep(100);
+		}
+		Thread.sleep(500);
+
+		System.out.println("Turning on all pumps");
+		for (Pump pump : pumps) {
+			pump.turnOn();
+			Thread.sleep(100);
+		}
+		Thread.sleep(500);
+
+		System.out.println("Turning off all burners");
+		for (Burner burner : burners) {
+			burner.turnOff();
+			Thread.sleep(100);
+		}
+		Thread.sleep(500);
+
+		System.out.println("Turning off all pumps");
+		for (Pump pump : pumps) {
+			pump.turnOff();
+			Thread.sleep(100);
+		}
 	}
 
 	/** Shut everything down */
@@ -98,11 +170,16 @@ public class BrewNinja {
 		logger.trace("Retrieving all equipment from database");
 
 		Session session = HibernateUtil.getSession();
-		BurnerDAOHibernate burnerDao = new BurnerDAOHibernate(session);
-		this.burners = burnerDao.getEnabledBurners();
-		if (null != gpioController) {
-			for (Burner burner : burners) {
-				burner.couplePin(gpioController);
+
+		this.burners = new BurnerDAOHibernate(session).getEnabledBurners();
+		this.pumps = new PumpDAOHibernate(session).getEnabledPumps();
+
+		if (!DEV_MODE) {
+			// both pumps and burners inherit from PinController, so combine and couple with
+			// the pins outputs on the RaspberryPi board
+			Iterable<PinController> pinControllers = Iterables.concat(burners, pumps);
+			for (PinController pinController : pinControllers) {
+				pinController.couplePin(gpioController);
 			}
 		}
 
