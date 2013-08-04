@@ -139,6 +139,19 @@
 		</testResources>
 
 		<plugins>
+
+			<!-- So that we can execute the compiled Java classes with Maven (no hassle with classpath or JARs) -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<mainClass>com.europabrewing.BrewNinja</mainClass>
+					<!-- <arguments><argument></argument></arguments> -->
+				</configuration>
+			</plugin>
+
+			<!-- Flyway Database evolution plugin -->
 			<plugin>
 				<groupId>com.googlecode.flyway</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
@@ -146,7 +159,7 @@
 				<configuration>
 					<driver>com.mysql.jdbc.Driver</driver>
 					<url>jdbc:mysql://localhost/brewninja</url>
-					<!-- put these in your maven settings.xml file
+					<!-- put this in your maven settings.xml file
 					<user></user><password></password>
 					-->
 					<serverId>brewninja-flyway-db</serverId>
@@ -157,6 +170,8 @@
 				</configuration>
 			</plugin>
 
+			<!-- Copy the custom config files on build. This allows every user to have
+			     separate configs but the system only look in one place. -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
