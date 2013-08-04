@@ -33,7 +33,7 @@ INSERT INTO `burner` (`burner_id`, `gpio_id`, `monitor_id`, `name`, `description
 	VALUES
 	(1,5,1,'HLT Burner','The hot liquor tank burner - 90k BTU jet burner',0),
 	(2,4,2,'MLT','The mash lauter tun burner - 90k BTU jet burner',0),
-	(3,3,NULL,'Boil','The main boil burner - Blichmann',1);
+	(3,3,NULL,'Boil','The main boil burner - Blichmann',0);
 
 /*!40000 ALTER TABLE `burner` ENABLE KEYS */;
 UNLOCK TABLES;
