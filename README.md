@@ -1,15 +1,21 @@
 BrewNinja
 =========
 
+Copyright © 2013 Jarett Creason
+
+This work is available under the "GPLv3" licence.  Please see the file `COPYING`
+in this distribution for licence terms.
+
 BrewNinja is a Java project to automate the temperature control for the burners on
 on our [Brutus 10](http://www.alenuts.com/Alenuts/brutus.html) homebrewing stand.
 The project is setup to run on a [Raspberry Pi](http://www.raspberrypi.org/) and work with
 a custom fabricated BrewNinja board to control relays and read in information.
-The relays control propane flow to valves and turn on and off pumps.  
+The relays control propane flow to valves and turn on and off pumps.
 Temperature data is read in using waterproof
 [DS18B20's](http://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing)
 sensors attached to a one wire interface.
 
+<i>This project is still in active development</i>
 
 ##How to Run
 BrewNinja must compile and run on real Raspberry Pi hardware.
@@ -61,8 +67,8 @@ These must be setup first before building.  Copy the two config files
 [src/main/resources/](https://github.com/jcreason/brewninja/tree/master/src/main/resources)
 as new file names.  Replace the word "example" in each file name with
 something different (like your name).  This keyword is then passed in as an
-argument to Maven on compile and your custom config files will be copied 
-to the correct location where they will be read by Hibernate and Log4J-2 
+argument to Maven on compile and your custom config files will be copied
+to the correct location where they will be read by Hibernate and Log4J-2
 at runtime.  Make sure and customize these files by adding in your database
 credentials and location and any special logging you'd like.
 
