@@ -1,7 +1,7 @@
 BrewNinja
 =========
 
-Copyright © 2013 Jarett Creason
+Copyright © 2013 Jarett Creason - jcreason@gmail.com
 
 This work is available under the "GPLv3" licence.  Please see the file `COPYING`
 in this distribution for licence terms.
@@ -15,7 +15,9 @@ Temperature data is read in using waterproof
 [DS18B20's](http://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing)
 sensors attached to a one wire interface.
 
-<i>This project is still in active development</i>
+<i>This project is still in active development.
+The master branch is the stable branch.
+Please use the [issues](https://github.com/jcreason/brewninja/issues) page to file bugs or requests.</i>
 
 ##How to Run
 BrewNinja must compile and run on real Raspberry Pi hardware.
@@ -100,6 +102,6 @@ GPIOs, and temperature sensors in the database.  Currently, there is not admin
 interface to do these things.
 
 ##Using the Interface
-...
-
+Once running, this should be fairly intuitive.  However, much more functionality
+will be coming in the future.
 
