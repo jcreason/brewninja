@@ -3,7 +3,8 @@ BrewNinja
 
 Copyright © 2013 Jarett Creason - jcreason@gmail.com
 
-This work is available under the "GPLv3" licence.  Please see the file `COPYING`
+This work is available under the "GPLv3" licence.  Please see the file
+[`COPYING`](https://github.com/jcreason/brewninja/blob/master/COPYING)
 in this distribution for licence terms.
 
 BrewNinja is a Java project to automate the temperature control for the burners on
@@ -20,10 +21,10 @@ The master branch is the stable branch.
 Please use the [issues](https://github.com/jcreason/brewninja/issues) page to file bugs or requests.</i>
 
 ##How to Run
-BrewNinja must compile and run on real Raspberry Pi hardware.
-It will run on other hardware, however, the [Pi4J](http://pi4j.com/)
-library that it depends on requires the Pi's architecture and IO pins, so
-the features of the program are severely limited.
+BrewNinja should be compiled and run on real Raspberry Pi hardware.
+The project will compile on other hardware, however, it uses the [Pi4J](http://pi4j.com/)
+library which requires the Pi's architecture.
+This means that when running on another architecture, the features of the program are severely limited.
 
 ###Requirements
 - Raspberry Pi<br/>

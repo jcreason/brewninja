@@ -36,9 +36,6 @@ public class Pump extends PinController {
 
 	private Integer pumpId;
 
-	private Boolean disabled;
-
-
 	/*
 	 * HIBERNATE GETTERS & SETTERS
 	 */
@@ -52,16 +49,6 @@ public class Pump extends PinController {
 
 	public void setPumpId(Integer pumpId) {
 		this.pumpId = pumpId;
-	}
-
-	@Basic
-	@Column(name = "disabled", nullable = false, insertable = true, updatable = true)
-	public Boolean getDisabled() {
-		return disabled;
-	}
-
-	public void setDisabled(Boolean disabled) {
-		this.disabled = disabled;
 	}
 
 	@Override

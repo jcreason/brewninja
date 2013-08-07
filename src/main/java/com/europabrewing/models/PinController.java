@@ -20,14 +20,12 @@
 
 package com.europabrewing.models;
 
-
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
 import javax.persistence.*;
-
 
 /**
  * @author jcreason - jcreason@gmail.com
@@ -41,6 +39,8 @@ public abstract class PinController {
 	protected Gpio gpio;
 
 	protected String name;
+
+	protected Boolean disabled;
 
 	@Transient
 	protected GpioPinDigitalOutput pin;
@@ -122,5 +122,19 @@ public abstract class PinController {
 
 	public void setGpio(Gpio gpio) {
 		this.gpio = gpio;
+	}
+
+	@Column(name = "disabled", nullable = false, insertable = true, updatable = true)
+	public Boolean getDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(Boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("[%s]%s (%s)", this.getClass().getSimpleName(), getName(), getDisabled() ? "disabled" : "enabled");
 	}
 }

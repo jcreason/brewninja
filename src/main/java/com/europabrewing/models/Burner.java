@@ -38,8 +38,6 @@ public class Burner extends PinController {
 
 	private String description;
 
-	private Boolean disabled;
-
 	private TempMonitor tempMonitor;
 
 
@@ -67,15 +65,6 @@ public class Burner extends PinController {
 		this.description = description;
 	}
 
-	@Column(name = "disabled", nullable = false, insertable = true, updatable = true)
-	public Boolean getDisabled() {
-		return disabled;
-	}
-
-	public void setDisabled(Boolean disabled) {
-		this.disabled = disabled;
-	}
-
 	@OneToOne(optional = true)
 	@JoinColumn(name = "monitor_id", referencedColumnName = "monitor_id")
 	public TempMonitor getTempMonitor() {
@@ -84,11 +73,6 @@ public class Burner extends PinController {
 
 	public void setTempMonitor(TempMonitor tempMonitor) {
 		this.tempMonitor = tempMonitor;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s - %s (%s)", getName(), getDescription(), getDisabled() ? "disabled" : "enabled");
 	}
 
 	@Override

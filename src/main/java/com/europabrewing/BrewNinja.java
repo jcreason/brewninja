@@ -35,8 +35,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -75,7 +73,6 @@ public class BrewNinja {
 		DEV_MODE = null == gpioController;
 	}
 
-
 	/**
 	 * Build the class the manages it all.
 	 * On construction, all equipment is loaded in from the database
@@ -84,15 +81,11 @@ public class BrewNinja {
 		initializeEquipmunk();
 
 		logger.trace("All burners configured:\n\t * " + Joiner.on("\n\t * ").join(burners));
+		logger.trace("All pumps configured:\n\t * " + Joiner.on("\n\t * ").join(pumps));
 
 		if (!DEV_MODE) {
-			try {
-				SysInfoUtil.logInfo();
-			} catch (IOException | InterruptedException | ParseException e) {
-				logger.warn("Exception thrown while trying to log system info.\n", e);
-			}
+			SysInfoUtil.logInfo();
 		}
-
 	}
 
 	/**
@@ -107,7 +100,6 @@ public class BrewNinja {
 			brewNinja = new BrewNinja();
 
 			brewNinja.testPinControllers();
-
 		} catch (Exception t) {
 			if (brewNinja != null) {
 				brewNinja.shutdown();
