@@ -32,6 +32,14 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.scene.transform.Scale;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -45,10 +53,16 @@ import java.util.List;
  *
  * Please see the README and/or documentation associated
  */
-public class BrewNinja {
+public class BrewNinja extends Application {
 
-	/** If The GPIO controller is null, means we're running in development mode */
+	/**
+	 * If The GPIO controller is null, means we're running in development mode
+	 */
 	public static final boolean DEV_MODE;
+
+	private final static int INIT_WIDTH = 1280;
+
+	private final static int INIT_HEIGHT = 800;
 
 	private final static Logger logger = LogManager.getLogger(BrewNinja.class.getName());
 
@@ -105,17 +119,39 @@ public class BrewNinja {
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
-		BrewNinja brewNinja = null;
+		launch(args);
+	}
 
-		try {
-			brewNinja = new BrewNinja();
+	@Override
+	public void start(Stage stage) throws Exception {
+		stage.setTitle("BrewNinja");
 
-			brewNinja.testPinControllers();
-		} catch (Exception t) {
-			if (brewNinja != null) {
-				brewNinja.shutdown();
+		Button btn = new Button();
+		btn.setText("Say 'Hello World'");
+		btn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				System.out.println("Hello World!");
 			}
-		}
+		});
+
+
+		final StackPane root = new StackPane();
+		root.setPrefWidth(INIT_WIDTH);
+		root.setPrefHeight(INIT_HEIGHT);
+		root.getChildren().add(btn);
+
+		Scale scale = new Scale(1, 1, 0, 0);
+		scale.xProperty().bind(root.widthProperty().divide(INIT_WIDTH));
+		scale.yProperty().bind(root.heightProperty().divide(INIT_HEIGHT));
+		root.getTransforms().add(scale);
+
+		final Scene scene = new Scene(root, INIT_WIDTH, INIT_HEIGHT);
+
+		stage.setScene(scene);
+		stage.setResizable(false);
+		stage.setFullScreen(true);
+		stage.show();
 	}
 
 	/**
@@ -158,7 +194,9 @@ public class BrewNinja {
 		}
 	}
 
-	/** Shut everything down */
+	/**
+	 * Shut everything down
+	 */
 	public void shutdown() {
 		if (null != gpioController) {
 			gpioController.shutdown();
