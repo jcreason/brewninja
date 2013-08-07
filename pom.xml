@@ -97,7 +97,7 @@
 			<version>2.2</version>
 		</dependency>
 
-		<!-- Logging -->
+		<!-- Logging - Log4j2 -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -109,12 +109,19 @@
 			<version>2.0-beta8</version>
 		</dependency>
 
-		<!-- Bind hibernate logs to log4j -->
-		<!--<dependency>-->
-			<!--<groupId>org.slf4j</groupId>-->
-			<!--<artifactId>slf4j-log4j12</artifactId>-->
-			<!--<version>2.0-beta8</version>-->
-		<!--</dependency>-->
+		<!-- Bind slf4j logs to log4j2 -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>2.0-beta8</version>
+		</dependency>
+
+		<!-- Bind apache logging to log4j2 -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-jcl</artifactId>
+			<version>2.0-beta8</version>
+		</dependency>
 
 	</dependencies>
 

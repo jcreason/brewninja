@@ -26,6 +26,7 @@ import com.europabrewing.models.Burner;
 import com.europabrewing.models.PinController;
 import com.europabrewing.models.Pump;
 import com.europabrewing.util.HibernateUtil;
+import com.europabrewing.util.NullOutputStream;
 import com.europabrewing.util.SysInfoUtil;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -35,6 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 
+import java.io.PrintStream;
 import java.util.List;
 
 /**
@@ -45,31 +47,40 @@ import java.util.List;
  */
 public class BrewNinja {
 
+	/** If The GPIO controller is null, means we're running in development mode */
+	public static final boolean DEV_MODE;
+
 	private final static Logger logger = LogManager.getLogger(BrewNinja.class.getName());
 
-	/** The GPIO controller.  If it's null, means we're running in development mode */
 	private static final GpioController gpioController;
-
-	private static final boolean DEV_MODE;
 
 	private List<Burner> burners;
 
 	private List<Pump> pumps;
 
 	static {
-		// create gpio controller instance
+		/*
+		 * Create SINGLE GPIOController instance on initialization
+		 * Do some shenanigans here redirect STDERR to NULL to stop the Pi4J
+		 * library from printing an error directly to STDERR.  Changing the logging levels
+		 * was not catching a stack trace when running this on non-RaspberryPi hardware,
+		 * and that was annoying, so I capture that the brute force way.
+		 * If you find this, and know a better solution, then by all means, implement it.
+		 */
 		GpioController tmpGpioCon = null;
+		PrintStream origErrOut = System.err;
 		try {
-			try {
-				tmpGpioCon = GpioFactory.getInstance();
-			} catch (Exception e) {
-				logger.error("another exception");
-			}
+			System.setErr(new PrintStream(new NullOutputStream()));
+			tmpGpioCon = GpioFactory.getInstance();
 		} catch (UnsatisfiedLinkError e) {
-			logger.error("Looks like you might not be running on a Raspberry Pi architecture.  Running in DEV mode.");
+			logger.warn("Looks like you might not be running on a Raspberry Pi architecture.  Running in DEV mode.");
+		} finally {
+			System.setErr(origErrOut);
 		}
 		gpioController = tmpGpioCon;
 
+		// if the GPIO Controller is null after the fact, it couldn't be initialized,
+		// meaning we're not running on a RaspPi, so set us up to be in "DEV_MODE"
 		DEV_MODE = null == gpioController;
 	}
 

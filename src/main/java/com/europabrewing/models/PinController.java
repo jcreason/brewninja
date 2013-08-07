@@ -135,6 +135,6 @@ public abstract class PinController {
 
 	@Override
 	public String toString() {
-		return String.format("[%s]%s (%s)", this.getClass().getSimpleName(), getName(), getDisabled() ? "disabled" : "enabled");
+		return String.format("[%s] %s (%s)", this.getClass().getSimpleName(), getName(), getDisabled() ? "disabled" : "enabled");
 	}
 }

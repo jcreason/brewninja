@@ -44,15 +44,6 @@
 		<root level="Warn">
 			<appender-ref ref="MyFileAppender"/>
 		</root>
-
-		<logger name="org.hibernate" level="error">
-			<appender-ref ref="MyFileAppender"/>
-		</logger>
-
-		<logger name="org.jboss.logging" level="error">
-			<appender-ref ref="MyFileAppender"/>
-		</logger>
-
 	</loggers>
 
 </configuration>
