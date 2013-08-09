@@ -79,7 +79,8 @@ credentials and location and any special logging you'd like.
 Once all requirements are satisfied, change directories on your Pi to the
 location of the BrewNinja source code.
 
-First you must put JavaFX on your classpath.  To read more about why, look [here](http://zenjava.com/javafx/maven/fix-classpath.html).
+**If you're not running Java 1.8**, you must put JavaFX on your classpath.
+To read more about why, look [here](http://zenjava.com/javafx/maven/fix-classpath.html).
 
 ```
 sudo mvn com.zenjava:javafx-maven-plugin:2.0:fix-classpath

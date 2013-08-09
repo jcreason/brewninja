@@ -33,12 +33,14 @@ import com.google.common.collect.Iterables;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.*;
@@ -93,9 +95,13 @@ public class BrewNinja extends Application {
 
 	private static final GpioController gpioController;
 
-	private static final Integer FONT_NORMAL = 18;
+	private static final String FONT = "Verdana";
 
-	private static final Integer FONT_BIG = 26;
+	private static final Font FONT_SMALL = Font.font(FONT, FontWeight.NORMAL, 14);
+
+	private static final Font FONT_NORMAL = Font.font(FONT, FontWeight.NORMAL, 22);
+
+	private static final Font FONT_BIG = Font.font(FONT, FontWeight.BOLD, 36);
 
 	static {
 		/*
@@ -161,6 +167,7 @@ public class BrewNinja extends Application {
 		border.setLeft(createLeftPane());
 		border.setCenter(createCenter());
 		border.setRight(createRightPane());
+		border.setBottom(createFooter());
 
 		Scene scene = new Scene(border, INIT_WIDTH, INIT_HEIGHT);
 
@@ -228,7 +235,7 @@ public class BrewNinja extends Application {
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
-		grid.setVgap(10);
+		grid.setVgap(50);
 //		grid.setPadding(new Insets(25, 25, 25, 25));
 //		grid.setGridLinesVisible(true);
 
@@ -260,7 +267,7 @@ public class BrewNinja extends Application {
 	private Node createPumpPane(final Pump pump) {
 		// the rectangle
 		StackPane stack = new StackPane();
-		Rectangle pumpBox = new Rectangle(200.0, 100.0);
+		Rectangle pumpBox = new Rectangle(260.0, 140.0);
 		pumpBox.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
 										   new Stop(0, Color.web("#CAFDBA")),
 										   new Stop(1, Color.web("#F2FFEE"))));
@@ -270,21 +277,23 @@ public class BrewNinja extends Application {
 
 		// box inside rectangle
 		VBox innerVBox = new VBox(8);
-		innerVBox.setPadding(new Insets(10));
+		innerVBox.setPadding(new Insets(20));
 		innerVBox.setAlignment(Pos.CENTER);
 
 		Text pumpName = new Text(pump.getName());
-		pumpName.setFont(Font.font("Helvetica", FontWeight.BOLD, FONT_BIG));
+		pumpName.setFont(FONT_BIG);
 		innerVBox.getChildren().add(pumpName);
 
 		// buttons
 		final ToggleGroup group = new ToggleGroup();
 
 		ToggleButton off = new ToggleButton("Off");
+		off.setFont(FONT_NORMAL);
 		off.setToggleGroup(group);
 		off.setSelected(true);
 
 		ToggleButton on = new ToggleButton("On");
+		on.setFont(FONT_NORMAL);
 		on.setToggleGroup(group);
 
 		HBox hBox = new HBox(10);
@@ -325,8 +334,8 @@ public class BrewNinja extends Application {
 
 		// the outer box with a couple on/off buttons
 		VBox outerVBox = new VBox(8);
-		outerVBox.setPadding(new Insets(10));
-		outerVBox.setPrefWidth(300);
+//		outerVBox.setPadding(new Insets(10));
+		outerVBox.setPrefWidth(320);
 
 		// the rectangle
 		StackPane stack = new StackPane();
@@ -345,17 +354,17 @@ public class BrewNinja extends Application {
 		innerVBox.setPadding(new Insets(10));
 
 		Text burnerName = new Text(burner.getName());
-		burnerName.setFont(Font.font("Helvetica", FontWeight.BOLD, FONT_BIG));
+		burnerName.setFont(FONT_BIG);
 		innerVBox.getChildren().add(burnerName);
 
 		if (null != burner.getTempMonitor()) {
 			Text currTemp = new Text("Current Temp: xx F");
-			currTemp.setFont(Font.font("Helvetica", FontWeight.NORMAL, FONT_NORMAL));
+			currTemp.setFont(FONT_NORMAL);
 			innerVBox.getChildren().add(currTemp);
 
 			if (null != burner.getPump()) {
 				Text targetTemp = new Text("Target Temp: xx F");
-				targetTemp.setFont(Font.font("Helvetica", FontWeight.NORMAL, FONT_NORMAL));
+				targetTemp.setFont(FONT_NORMAL);
 				innerVBox.getChildren().add(targetTemp);
 			}
 		}
@@ -386,17 +395,19 @@ public class BrewNinja extends Application {
 		HBox hBox = new HBox(10);
 		hBox.setPadding(new Insets(10));
 
-		Text text = new Text("Automate Temp:");
-		text.setFont(Font.font("Helvetica", FontWeight.NORMAL, FONT_NORMAL));
+		Text text = new Text("Auto Temp:");
+		text.setFont(FONT_NORMAL);
 
 		final ToggleGroup group = new ToggleGroup();
 
 		ToggleButton off = new ToggleButton("Off");
 		off.setToggleGroup(group);
+		off.setFont(FONT_NORMAL);
 		off.setSelected(true);
 
 		ToggleButton on = new ToggleButton("On");
 		on.setToggleGroup(group);
+		on.setFont(FONT_NORMAL);
 		hBox.getChildren().addAll(text, off, on);
 
 		on.setOnAction(new EventHandler<ActionEvent>() {
@@ -426,19 +437,24 @@ public class BrewNinja extends Application {
 	 */
 	private HBox createBurnerOnOffHbox(final Burner burner) {
 		HBox hBox = new HBox(10);
+		hBox.setAlignment(Pos.BOTTOM_LEFT);
 		hBox.setPadding(new Insets(10));
 
 		Text text = new Text("Burner:");
-		text.setFont(Font.font("Helvetica", FontWeight.NORMAL, FONT_NORMAL));
+		text.setFont(FONT_NORMAL);
 
 		final ToggleGroup group = new ToggleGroup();
 
 		ToggleButton off = new ToggleButton("Off");
 		off.setToggleGroup(group);
+		off.setAlignment(Pos.BOTTOM_CENTER);
+		off.setFont(FONT_NORMAL);
 		off.setSelected(true);
 
 		ToggleButton on = new ToggleButton("On");
 		on.setToggleGroup(group);
+		on.setAlignment(Pos.BOTTOM_CENTER);
+		on.setFont(FONT_NORMAL);
 		hBox.getChildren().addAll(text, off, on);
 
 		on.setOnAction(new EventHandler<ActionEvent>() {
@@ -471,12 +487,38 @@ public class BrewNinja extends Application {
 		hbox.setStyle("-fx-background-color: #CAFDBA;");
 
 		Text title = new Text("BrewNinja");
-		title.setFont(Font.font("Helvetica", FontWeight.BOLD, FONT_BIG));
+		title.setFont(FONT_BIG);
 		hbox.setAlignment(Pos.CENTER);
 
 		hbox.getChildren().add(title);
 
 		return hbox;
+	}
+
+	/**
+	 * Create the footer
+	 *
+	 * @return
+	 */
+	private Node createFooter() {
+		HBox hBox = new HBox(10);
+		hBox.setPadding(new Insets(10));
+		hBox.setAlignment(Pos.BOTTOM_RIGHT);
+
+		Button btn = new Button("Exit");
+		btn.setFont(FONT_SMALL);
+
+		btn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				shutdown();
+				Platform.exit();
+			}
+		});
+
+		hBox.getChildren().add(btn);
+
+		return hBox;
 	}
 
 	/**
