@@ -40,6 +40,16 @@ public class Burner extends PinController {
 
 	private TempMonitor tempMonitor;
 
+	private Pump pump;
+
+	/**
+	 * Fire off a new thread to automate this burner's temperature
+	 *
+	 * @param b
+	 */
+	public void automateTemp(boolean b) {
+		// TODO
+	}
 
 	/*
 	 * HIBERNATE GETTERS & SETTERS
@@ -73,6 +83,16 @@ public class Burner extends PinController {
 
 	public void setTempMonitor(TempMonitor tempMonitor) {
 		this.tempMonitor = tempMonitor;
+	}
+
+	@OneToOne(optional = true)
+	@JoinColumn(name = "pump_id", referencedColumnName = "pump_id")
+	public Pump getPump() {
+		return pump;
+	}
+
+	public void setPump(Pump pump) {
+		this.pump = pump;
 	}
 
 	@Override

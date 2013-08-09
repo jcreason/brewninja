@@ -77,20 +77,27 @@ credentials and location and any special logging you'd like.
 
 ###Running
 Once all requirements are satisfied, change directories on your Pi to the
-location of the BrewNinja source code.  You must first run:
+location of the BrewNinja source code.
+
+First you must put JavaFX on your classpath.  To read more about why, look [here](http://zenjava.com/javafx/maven/fix-classpath.html).
+
+```
+sudo mvn com.zenjava:javafx-maven-plugin:2.0:fix-classpath
+```
+
+Next, fill your empty database it with tables and data:
 
 ```
 mvn flyway:migrate
 ```
 
-to create the database and fill it with data.  Then, you must compile with
-
+Then, compile:
 
 ```
 mvn compile -Dproperties=<keyword_for_config_files>
 ```
 
-To run, you use the [exec-maven-plugin](http://mojo.codehaus.org/exec-maven-plugin/)
+Finally, to run, you use the [exec-maven-plugin](http://mojo.codehaus.org/exec-maven-plugin/):
 
 ```
 mvn exec:java -Dproperties=<keyword_for_config_files>

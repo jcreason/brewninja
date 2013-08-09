@@ -36,6 +36,8 @@ public class Pump extends PinController {
 
 	private Integer pumpId;
 
+	private Burner burner;
+
 	/*
 	 * HIBERNATE GETTERS & SETTERS
 	 */
@@ -49,6 +51,15 @@ public class Pump extends PinController {
 
 	public void setPumpId(Integer pumpId) {
 		this.pumpId = pumpId;
+	}
+
+	@OneToOne(mappedBy = "pump")
+	public Burner getBurner() {
+		return burner;
+	}
+
+	public void setBurner(Burner burner) {
+		this.burner = burner;
 	}
 
 	@Override

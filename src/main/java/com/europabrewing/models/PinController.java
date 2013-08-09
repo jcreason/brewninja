@@ -20,6 +20,7 @@
 
 package com.europabrewing.models;
 
+import com.europabrewing.BrewNinja;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
@@ -52,11 +53,14 @@ public abstract class PinController {
 	 * @return result of coupling
 	 */
 	public boolean couplePin(GpioController gpioController) {
-		Pin piPin = gpio.convertToPiPin();
-		if (null == piPin) {
-			return false;
+		if (!BrewNinja.DEV_MODE) {
+			Pin piPin = gpio.convertToPiPin();
+			if (null == piPin) {
+				return false;
+			}
+			this.pin = gpioController.provisionDigitalOutputPin(piPin, name, PinState.LOW);
 		}
-		this.pin = gpioController.provisionDigitalOutputPin(piPin, name, PinState.LOW);
+
 		return true;
 	}
 
@@ -66,8 +70,8 @@ public abstract class PinController {
 	 * @return
 	 */
 	public void turnOn() {
-		System.out.printf("Turning on %s %s (%s)%n", this.getClass().getSimpleName(), getName(), getGpio());
-		pin.high();
+		if (!BrewNinja.DEV_MODE)
+			pin.high();
 	}
 
 	/**
@@ -76,8 +80,8 @@ public abstract class PinController {
 	 * @return
 	 */
 	public void turnOff() {
-		System.out.printf("Turning off %s %s (%s)%n", this.getClass().getSimpleName(), getName(), getGpio());
-		pin.low();
+		if (!BrewNinja.DEV_MODE)
+			pin.low();
 	}
 
 	/**
@@ -86,8 +90,8 @@ public abstract class PinController {
 	 * @return
 	 */
 	public void toggle() {
-		System.out.printf("Toggling %s %s (%s)%n", this.getClass().getSimpleName(), getName(), getGpio());
-		pin.toggle();
+		if (!BrewNinja.DEV_MODE)
+			pin.toggle();
 	}
 
 	/**
@@ -97,7 +101,7 @@ public abstract class PinController {
 	 */
 	@Transient
 	public boolean isOn() {
-		return pin.isHigh();
+		return !BrewNinja.DEV_MODE && pin.isHigh();
 	}
 
 	/*
