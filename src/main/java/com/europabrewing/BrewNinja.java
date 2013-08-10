@@ -222,6 +222,12 @@ public class BrewNinja extends Application {
 	 */
 	public void shutdown() {
 		if (null != gpioController) {
+			for (Burner burner : burners) {
+				burner.turnOff();
+			}
+			for (Pump pump : pumps) {
+				pump.turnOff();
+			}
 			gpioController.shutdown();
 		}
 	}
@@ -236,7 +242,6 @@ public class BrewNinja extends Application {
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
 		grid.setVgap(50);
-//		grid.setPadding(new Insets(25, 25, 25, 25));
 //		grid.setGridLinesVisible(true);
 
 		// burners
@@ -290,11 +295,12 @@ public class BrewNinja extends Application {
 		ToggleButton off = new ToggleButton("Off");
 		off.setFont(FONT_NORMAL);
 		off.setToggleGroup(group);
-		off.setSelected(true);
+		off.setSelected(!pump.isOn());
 
 		ToggleButton on = new ToggleButton("On");
 		on.setFont(FONT_NORMAL);
 		on.setToggleGroup(group);
+		on.setSelected(pump.isOn());
 
 		HBox hBox = new HBox(10);
 		hBox.setPadding(new Insets(10));
@@ -408,6 +414,7 @@ public class BrewNinja extends Application {
 		ToggleButton on = new ToggleButton("On");
 		on.setToggleGroup(group);
 		on.setFont(FONT_NORMAL);
+
 		hBox.getChildren().addAll(text, off, on);
 
 		on.setOnAction(new EventHandler<ActionEvent>() {
@@ -447,14 +454,14 @@ public class BrewNinja extends Application {
 
 		ToggleButton off = new ToggleButton("Off");
 		off.setToggleGroup(group);
-		off.setAlignment(Pos.BOTTOM_CENTER);
 		off.setFont(FONT_NORMAL);
-		off.setSelected(true);
+		off.setSelected(!burner.isOn());
 
 		ToggleButton on = new ToggleButton("On");
 		on.setToggleGroup(group);
-		on.setAlignment(Pos.BOTTOM_CENTER);
 		on.setFont(FONT_NORMAL);
+		on.setSelected(burner.isOn());
+
 		hBox.getChildren().addAll(text, off, on);
 
 		on.setOnAction(new EventHandler<ActionEvent>() {
