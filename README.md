@@ -104,6 +104,11 @@ Finally, to run, you use the [exec-maven-plugin](http://mojo.codehaus.org/exec-m
 mvn exec:java -Dproperties=<keyword_for_config_files>
 ```
 
+In addition, once installed, the [`brewninja`](https://github.com/jcreason/brewninja/blob/master/brewninja)
+startup service script can be configured and used to create a system
+service that allows brewninja to start on system boot at the desired
+boot level.
+
 
 ##Customizing the Data
 After first running the flyway migration, you can customize the burners,
