@@ -22,11 +22,13 @@ package com.europabrewing;
 
 import com.europabrewing.daos.BurnerDAOHibernate;
 import com.europabrewing.daos.PumpDAOHibernate;
+import com.europabrewing.daos.TempMonitorDAOHibernate;
+import com.europabrewing.lib.NullOutputStream;
 import com.europabrewing.models.Burner;
 import com.europabrewing.models.PinController;
 import com.europabrewing.models.Pump;
+import com.europabrewing.models.TempMonitor;
 import com.europabrewing.util.HibernateUtil;
-import com.europabrewing.util.NullOutputStream;
 import com.europabrewing.util.SysInfoUtil;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -132,6 +134,8 @@ public class BrewNinja extends Application {
 	private List<Burner> burners;
 
 	private List<Pump> pumps;
+
+	private List<TempMonitor> tempMonitors;
 
 	/**
 	 * Build the class the manages it all.
@@ -364,7 +368,7 @@ public class BrewNinja extends Application {
 		innerVBox.getChildren().add(burnerName);
 
 		if (null != burner.getTempMonitor()) {
-			Text currTemp = new Text("Current Temp: xx F");
+			Text currTemp = new Text("Current Temp: " + burner.getTempMonitor().getTemp());
 			currTemp.setFont(FONT_NORMAL);
 			innerVBox.getChildren().add(currTemp);
 
@@ -563,6 +567,7 @@ public class BrewNinja extends Application {
 
 		this.burners = new BurnerDAOHibernate(session).getEnabledBurners();
 		this.pumps = new PumpDAOHibernate(session).getEnabledPumps();
+		this.tempMonitors = new TempMonitorDAOHibernate(session).getTempMonitors();
 
 		if (!DEV_MODE) {
 			// both pumps and burners inherit from PinController, so combine and couple with
@@ -570,6 +575,11 @@ public class BrewNinja extends Application {
 			Iterable<PinController> pinControllers = Iterables.concat(burners, pumps);
 			for (PinController pinController : pinControllers) {
 				pinController.couplePin(gpioController);
+			}
+
+			// start the temperature collection
+			for (TempMonitor monitor : tempMonitors) {
+				monitor.initTempCollection();
 			}
 		}
 

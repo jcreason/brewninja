@@ -20,7 +20,19 @@
 
 package com.europabrewing.models;
 
+import com.europabrewing.lib.Temp;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.persistence.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -34,6 +46,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "temp_monitor")
 public class TempMonitor {
 
+	public static final String FILENAME = "w1_slave";
+
 	private Integer monitorId;
 
 	private String name;
@@ -46,15 +60,47 @@ public class TempMonitor {
 
 	private Burner burner;
 
+	private Temp temp;
+
+	private Long updatedTime;
+
+	/**
+	 * Initialize the collection of temperature readings from
+	 * the file on disk
+	 */
+	public void initTempCollection() {
+		TempUpdater tempUpdater = new TempUpdater(this);
+		tempUpdater.start();
+	}
+
+	/**
+	 * Get the last time this Temp was updated
+	 *
+	 * @return
+	 */
+	@Transient
+	public Long getUpdatedTime() {
+		return updatedTime;
+	}
+
 	/**
 	 * Return the current temperature of this TempMonitor
 	 *
-	 * @return the current temp in Fahrenheit
+	 * @return the current Temp
 	 */
 	@Transient
-	public Double getTemp() {
-		// TODO
-		return null;
+	public Temp getTemp() {
+		return temp;
+	}
+
+	/**
+	 * Set the temp
+	 *
+	 * @param temp
+	 */
+	public void setTemp(Temp temp) {
+		this.updatedTime = System.currentTimeMillis();
+		this.temp = temp;
 	}
 
 	/*
@@ -160,5 +206,95 @@ public class TempMonitor {
 		result = 31 * result + (directory != null ? directory.hashCode() : 0);
 		result = 31 * result + (disabled != null ? disabled.hashCode() : 0);
 		return result;
+	}
+
+	/**
+	 * A threaded class to update the temperature of a TempMonitor
+	 */
+	public static class TempUpdater extends Thread {
+
+		public static final int SLEEP_TIME = 5000;
+
+		private final static Logger logger = LogManager.getLogger(TempUpdater.class.getName());
+
+		private final TempMonitor tempMonitor;
+
+		private final File file;
+
+		private StringBuilder contents;
+
+		public TempUpdater(TempMonitor tempMonitor) {
+			this.tempMonitor = tempMonitor;
+
+			String fileName = tempMonitor.getDirectory() + tempMonitor.getSerial() + FILENAME;
+			this.file = new File(fileName);
+		}
+
+		@Override
+		public void run() {
+			FileInputStream fin = null;
+
+			try {
+				final FileChannel channel;
+				final MappedByteBuffer buffer;
+
+				fin = new FileInputStream(file);
+				channel = fin.getChannel();
+				buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+
+				while (true) {
+					contents = new StringBuilder();
+					for (int i = 0; i < buffer.limit(); i++) {
+						buffer.get();
+					}
+
+					Temp temp = parse(contents.toString());
+					tempMonitor.setTemp(temp);
+
+					logger.trace(String.format("Gathered temperature for %s which was %s", tempMonitor, temp));
+
+					Thread.sleep(SLEEP_TIME);
+				}
+
+			} catch (Exception e) {
+				logger.error("Error reading temperature", e);
+			} finally {
+				if (fin != null) {
+					try {
+						fin.close();
+					} catch (IOException ignored) {
+					}
+				}
+			}
+		}
+
+		/**
+		 * Take the contents of the temp file and parse it.  If the reading
+		 * failed, null will be returned
+		 *
+		 * @param contents
+		 * @return
+		 */
+		private Temp parse(String contents) {
+			try {
+				List<String> lines = Lists.newArrayList(Splitter.on("\n").split(contents));
+
+				// match a line that looks like: "94 01 4b 46 7f ff 0c 10 26 : crc=26 YES"
+				if (lines.get(0).endsWith("YES")) {
+
+					// match a line that looks like: "94 01 4b 46 7f ff 0c 10 26 t=25250"
+					Double cTemp = Double.valueOf(lines.get(1).substring(lines.get(1).indexOf("t=") + 2)) / 1000;
+					Temp temp = new Temp(Temp.UNIT.F);
+					temp.setTemp(Temp.convertToFahrenheit(cTemp));
+
+					return temp;
+				}
+
+			} catch (Exception e) {
+				logger.error("Error trying to parse temp from file", e);
+			}
+
+			return null;
+		}
 	}
 }

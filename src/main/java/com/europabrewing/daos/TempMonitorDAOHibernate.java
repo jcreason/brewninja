@@ -18,30 +18,34 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.europabrewing.util;
+package com.europabrewing.daos;
 
-import java.io.OutputStream;
+import com.europabrewing.models.TempMonitor;
+import com.europabrewing.util.HibernateUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+
+import java.util.List;
 
 /**
  * @author jcreason - jcreason@gmail.com
- * @date August 2013
+ * @date July 2013
  *
  * Please see the README and/or documentation associated
  */
-public class NullOutputStream extends OutputStream {
+public class TempMonitorDAOHibernate implements TempMonitorDAO {
 
-	public NullOutputStream() {
+	private final static Logger logger = LogManager.getLogger(TempMonitorDAOHibernate.class.getName());
+
+	private final Session session;
+
+	public TempMonitorDAOHibernate(Session session) {
+		this.session = session;
 	}
 
 	@Override
-	public void write(int b) {
-	}
-
-	@Override
-	public void write(byte[] b) {
-	}
-
-	@Override
-	public void write(byte[] b, int off, int len) {
+	public List<TempMonitor> getTempMonitors() {
+		return HibernateUtil.listAndCast(session.createQuery("from TempMonitor"));
 	}
 }
