@@ -217,6 +217,8 @@ public class TempMonitor {
 
 		private final static Logger logger = LogManager.getLogger(TempUpdater.class.getName());
 
+		private static final String SEPARATOR = "/";
+
 		private final TempMonitor tempMonitor;
 
 		private final File file;
@@ -231,9 +233,9 @@ public class TempMonitor {
 			String fileName = String.format(
 					"%s%s%s%s%s",
 					tempMonitor.getDirectory(),
-					File.pathSeparator,
+					SEPARATOR,
 					tempMonitor.getSerial(),
-					File.pathSeparator,
+					SEPARATOR,
 					FILENAME);
 
 			this.file = new File(fileName);
