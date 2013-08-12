@@ -21,18 +21,13 @@
 package com.europabrewing.models;
 
 import com.europabrewing.lib.Temp;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.persistence.*;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -221,63 +216,43 @@ public class TempMonitor {
 
 		private final TempMonitor tempMonitor;
 
-		private final File file;
-
-		private StringBuilder contents;
+		private final String filePath;
 
 		public TempUpdater(TempMonitor tempMonitor) {
-			logger.trace("Created new TempUpdater class to monitor " + tempMonitor);
-
 			this.tempMonitor = tempMonitor;
+			this.filePath = String.format(
+					"%s%s%s%s%s", tempMonitor.getDirectory(), SEPARATOR,
+					tempMonitor.getSerial(), SEPARATOR, FILENAME);
 
-			String fileName = String.format(
-					"%s%s%s%s%s",
-					tempMonitor.getDirectory(),
-					SEPARATOR,
-					tempMonitor.getSerial(),
-					SEPARATOR,
-					FILENAME);
-
-			this.file = new File(fileName);
+			logger.trace(String.format("Created new TempUpdater class to monitor %s at file %s", tempMonitor, filePath));
 		}
 
 		@Override
 		public void run() {
-			FileInputStream fin = null;
+			String line1, line2;
+			BufferedReader br = null;
 
-			try {
-				final FileChannel channel;
-				final MappedByteBuffer buffer;
+			while (true) {
+				try {
+					br = new BufferedReader(new FileReader(filePath));
+					line1 = br.readLine();
+					line2 = br.readLine();
 
-				fin = new FileInputStream(file);
-				channel = fin.getChannel();
-				buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+					Temp temp = parse(line1, line2);
+					tempMonitor.setTemp(temp);
 
-				while (true) {
-					try {
-						contents = new StringBuilder();
-						for (int i = 0; i < buffer.limit(); i++) {
-							buffer.get();
+					logger.trace(String.format("Gathered temperature for %s which was %s", tempMonitor, temp));
+
+					Thread.sleep(SLEEP_TIME);
+
+				} catch (Exception e) {
+					logger.error("Error reading temperature", e);
+				} finally {
+					if (br != null) {
+						try {
+							br.close();
+						} catch (IOException ignored) {
 						}
-
-						Temp temp = parse(contents.toString());
-						tempMonitor.setTemp(temp);
-
-						logger.trace(String.format("Gathered temperature for %s which was %s", tempMonitor, temp));
-
-						Thread.sleep(SLEEP_TIME);
-					} catch (Exception e) {
-						logger.error("Error reading temperature", e);
-					}
-				}
-
-			} catch (Exception e) {
-				logger.error("Error setting up files to read temperature, abandoning thread!", e);
-			} finally {
-				if (fin != null) {
-					try {
-						fin.close();
-					} catch (IOException ignored) {
 					}
 				}
 			}
@@ -287,18 +262,18 @@ public class TempMonitor {
 		 * Take the contents of the temp file and parse it.  If the reading
 		 * failed, null will be returned
 		 *
-		 * @param contents
+		 * @param line1
+		 * @param line2
 		 * @return
 		 */
-		private Temp parse(String contents) {
+		private Temp parse(String line1, String line2) {
 			try {
-				List<String> lines = Lists.newArrayList(Splitter.on("\n").split(contents));
 
 				// match a line that looks like: "94 01 4b 46 7f ff 0c 10 26 : crc=26 YES"
-				if (lines.get(0).endsWith("YES")) {
+				if (line1.endsWith("YES")) {
 
 					// match a line that looks like: "94 01 4b 46 7f ff 0c 10 26 t=25250"
-					Double cTemp = Double.valueOf(lines.get(1).substring(lines.get(1).indexOf("t=") + 2)) / 1000;
+					Double cTemp = Double.valueOf(line2.substring(line2.indexOf("t=") + 2)) / 1000;
 					Temp temp = new Temp(Temp.UNIT.F);
 					temp.setTemp(Temp.convertToFahrenheit(cTemp));
 
