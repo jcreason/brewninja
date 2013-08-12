@@ -224,9 +224,18 @@ public class TempMonitor {
 		private StringBuilder contents;
 
 		public TempUpdater(TempMonitor tempMonitor) {
+			logger.trace("Created new TempUpdater class to monitor " + tempMonitor);
+
 			this.tempMonitor = tempMonitor;
 
-			String fileName = tempMonitor.getDirectory() + tempMonitor.getSerial() + FILENAME;
+			String fileName = String.format(
+					"%s%s%s%s%s",
+					tempMonitor.getDirectory(),
+					File.pathSeparator,
+					tempMonitor.getSerial(),
+					File.pathSeparator,
+					FILENAME);
+
 			this.file = new File(fileName);
 		}
 
@@ -243,21 +252,25 @@ public class TempMonitor {
 				buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
 
 				while (true) {
-					contents = new StringBuilder();
-					for (int i = 0; i < buffer.limit(); i++) {
-						buffer.get();
+					try {
+						contents = new StringBuilder();
+						for (int i = 0; i < buffer.limit(); i++) {
+							buffer.get();
+						}
+
+						Temp temp = parse(contents.toString());
+						tempMonitor.setTemp(temp);
+
+						logger.trace(String.format("Gathered temperature for %s which was %s", tempMonitor, temp));
+
+						Thread.sleep(SLEEP_TIME);
+					} catch (Exception e) {
+						logger.error("Error reading temperature", e);
 					}
-
-					Temp temp = parse(contents.toString());
-					tempMonitor.setTemp(temp);
-
-					logger.trace(String.format("Gathered temperature for %s which was %s", tempMonitor, temp));
-
-					Thread.sleep(SLEEP_TIME);
 				}
 
 			} catch (Exception e) {
-				logger.error("Error reading temperature", e);
+				logger.error("Error setting up files to read temperature, abandoning thread!", e);
 			} finally {
 				if (fin != null) {
 					try {
