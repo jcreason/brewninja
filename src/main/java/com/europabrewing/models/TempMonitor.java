@@ -210,9 +210,11 @@ public class TempMonitor {
 
 		public static final int SLEEP_TIME = 5000;
 
-		private final static Logger logger = LogManager.getLogger(TempUpdater.class.getName());
+		private static final Logger logger = LogManager.getLogger(TempUpdater.class.getName());
 
 		private static final String SEPARATOR = "/";
+
+		private static final int MAX_TRIES = 2;
 
 		private final TempMonitor tempMonitor;
 
@@ -227,37 +229,6 @@ public class TempMonitor {
 			logger.trace(String.format("Created new TempUpdater class to monitor %s at file %s", tempMonitor, filePath));
 		}
 
-		@Override
-		public void run() {
-			String line1, line2;
-			BufferedReader br = null;
-
-			while (true) {
-				try {
-					br = new BufferedReader(new FileReader(filePath));
-					line1 = br.readLine();
-					line2 = br.readLine();
-
-					Temp temp = parse(line1, line2);
-					tempMonitor.setTemp(temp);
-
-					logger.trace(String.format("Gathered temperature for %s which was %s", tempMonitor, temp));
-
-					Thread.sleep(SLEEP_TIME);
-
-				} catch (Exception e) {
-					logger.error("Error reading temperature", e);
-				} finally {
-					if (br != null) {
-						try {
-							br.close();
-						} catch (IOException ignored) {
-						}
-					}
-				}
-			}
-		}
-
 		/**
 		 * Take the contents of the temp file and parse it.  If the reading
 		 * failed, null will be returned
@@ -266,7 +237,7 @@ public class TempMonitor {
 		 * @param line2
 		 * @return
 		 */
-		private Temp parse(String line1, String line2) {
+		private static Temp parse(String line1, String line2) {
 			try {
 
 				// match a line that looks like: "94 01 4b 46 7f ff 0c 10 26 : crc=26 YES"
@@ -285,6 +256,51 @@ public class TempMonitor {
 			}
 
 			return null;
+		}
+
+		@Override
+		public void run() {
+			String line1, line2;
+			BufferedReader br = null;
+
+			// never stop running
+			while (true) {
+				try {
+					int tries = 0;
+					Temp temp = null;
+
+					// sometimes reading the temp fails, so we'll try a couple times
+					while (null == temp && tries < MAX_TRIES) {
+						tries++;
+						br = new BufferedReader(new FileReader(filePath));
+						line1 = br.readLine();
+						line2 = br.readLine();
+						br.close();
+
+						temp = parse(line1, line2);
+
+						if (null == temp)
+							logger.debug(String.format("Try number %d failed to read temp from %s", tries, tempMonitor));
+					}
+
+					if (null != temp)
+						tempMonitor.setTemp(temp);
+
+					logger.trace(String.format("Gathered temperature for %s which was %s", tempMonitor, temp));
+
+					Thread.sleep(SLEEP_TIME);
+
+				} catch (Exception e) {
+					logger.error("Error reading temperature", e);
+				} finally {
+					if (br != null) {
+						try {
+							br.close();
+						} catch (IOException ignored) {
+						}
+					}
+				}
+			}
 		}
 	}
 }
