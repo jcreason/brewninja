@@ -22,6 +22,7 @@ package com.europabrewing.lib;
 
 import com.europabrewing.BrewNinja;
 import com.europabrewing.models.TempMonitor;
+import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -121,7 +122,13 @@ public class TempUpdater extends Thread {
 					// TODO: we should not have to do this, the GUI should be bound to the model - figure that out
 					// update the GUI here, when we update the tempMonitor model
 					if (brewNinja.getTempLabels().containsKey(tempMonitor)) {
-						brewNinja.getTempLabels().get(tempMonitor).setText(temp.toString());
+						final Temp finalTemp = temp;
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								brewNinja.getTempLabels().get(tempMonitor).setText(finalTemp.toString());
+							}
+						});
 					}
 				}
 
