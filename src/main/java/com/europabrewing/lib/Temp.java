@@ -24,10 +24,6 @@ package com.europabrewing.lib;
  * @author jcreason
  * @date August 2013
  *
- * Please see the README and/or documentation associated
- */
-
-/**
  * Represents a temperature
  */
 public class Temp {
@@ -96,6 +92,6 @@ public class Temp {
 
 	@Override
 	public String toString() {
-		return String.format("%.2f %s", getTemp(), getUnit());
+		return String.format("%.2f° %s", getTemp(), getUnit());
 	}
 }

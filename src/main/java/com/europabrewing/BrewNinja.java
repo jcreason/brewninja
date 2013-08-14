@@ -24,6 +24,7 @@ import com.europabrewing.daos.BurnerDAOHibernate;
 import com.europabrewing.daos.PumpDAOHibernate;
 import com.europabrewing.daos.TempMonitorDAOHibernate;
 import com.europabrewing.lib.NullOutputStream;
+import com.europabrewing.lib.TempUpdater;
 import com.europabrewing.models.Burner;
 import com.europabrewing.models.PinController;
 import com.europabrewing.models.Pump;
@@ -43,6 +44,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.*;
@@ -60,7 +62,9 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author jcreason - jcreason@gmail.com
@@ -131,17 +135,27 @@ public class BrewNinja extends Application {
 		DEV_MODE = null == gpioController;
 	}
 
-	private List<Burner> burners;
+	private final Map<TempMonitor, Label> tempLabels;
 
-	private List<Pump> pumps;
+	private final List<Burner> burners;
 
-	private List<TempMonitor> tempMonitors;
+	private final List<Pump> pumps;
+
+	private final List<TempMonitor> tempMonitors;
 
 	/**
 	 * Build the class the manages it all.
 	 * On construction, all equipment is loaded in from the database
 	 */
 	public BrewNinja() {
+		logger.trace("Retrieving all equipment from database");
+
+		Session session = HibernateUtil.getSession();
+		this.burners = new BurnerDAOHibernate(session).getEnabledBurners();
+		this.pumps = new PumpDAOHibernate(session).getEnabledPumps();
+		this.tempMonitors = new TempMonitorDAOHibernate(session).getTempMonitors();
+		session.close();
+
 		initializeEquipmunk();
 
 		logger.trace("All burners configured:\n\t * " + Joiner.on("\n\t * ").join(burners));
@@ -150,6 +164,7 @@ public class BrewNinja extends Application {
 		if (!DEV_MODE) {
 			SysInfoUtil.logInfo();
 		}
+		tempLabels = new HashMap<>();
 	}
 
 	/**
@@ -234,6 +249,15 @@ public class BrewNinja extends Application {
 			}
 			gpioController.shutdown();
 		}
+	}
+
+	/**
+	 * Return the labels that hold the temperatures
+	 *
+	 * @return
+	 */
+	public Map<TempMonitor, Label> getTempLabels() {
+		return tempLabels;
 	}
 
 	/**
@@ -368,9 +392,16 @@ public class BrewNinja extends Application {
 		innerVBox.getChildren().add(burnerName);
 
 		if (null != burner.getTempMonitor()) {
-			Text currTemp = new Text("Current Temp: " + burner.getTempMonitor().getTemp());
+			Text currTemp = new Text("Current Temp: ");
 			currTemp.setFont(FONT_NORMAL);
-			innerVBox.getChildren().add(currTemp);
+			String init = null == burner.getTempMonitor().getTemp() ? "none" : burner.getTempMonitor().getTemp().toString();
+			Label tempLabel = new Label(init);
+			tempLabel.setFont(FONT_NORMAL);
+			this.tempLabels.put(burner.getTempMonitor(), tempLabel);
+			HBox hBox = new HBox();
+			hBox.getChildren().addAll(currTemp, tempLabel);
+
+			innerVBox.getChildren().add(hBox);
 
 			if (null != burner.getPump()) {
 				Text targetTemp = new Text("Target Temp: xx F");
@@ -561,13 +592,6 @@ public class BrewNinja extends Application {
 	 * Burners & liquid Pumps
 	 */
 	private void initializeEquipmunk() {
-		logger.trace("Retrieving all equipment from database");
-
-		Session session = HibernateUtil.getSession();
-
-		this.burners = new BurnerDAOHibernate(session).getEnabledBurners();
-		this.pumps = new PumpDAOHibernate(session).getEnabledPumps();
-		this.tempMonitors = new TempMonitorDAOHibernate(session).getTempMonitors();
 
 		if (!DEV_MODE) {
 			// both pumps and burners inherit from PinController, so combine and couple with
@@ -579,10 +603,9 @@ public class BrewNinja extends Application {
 
 			// start the temperature collection
 			for (TempMonitor monitor : tempMonitors) {
-				monitor.initTempCollection();
+				TempUpdater tempUpdater = new TempUpdater(monitor, this);
+				tempUpdater.start();
 			}
 		}
-
-		session.close();
 	}
 }

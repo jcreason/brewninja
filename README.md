@@ -29,11 +29,11 @@ This means that when running on another architecture, the features of the progra
 ###Requirements
 - Raspberry Pi<br/>
 I used [Raspbian "wheezy"](http://www.raspberrypi.org/downloads) as my install image.  All
-of this should be possible regardless of which distro you use, but do be aware of the hardfloat
-vs. softfloat issues...
+of this should be possible regardless of which distro you use, but do be aware of the
+difference between hardfloat vs. softfloat and which one your distro uses.
 
 - BrewNinja Code<br/>
-You know, clone the git repo or download the source code.
+This code here, so clone the git repo or download the source code.
 
 - Java 7+<br/>
 I am using Java 8 downloaded from [here](http://jdk8.java.net/download.html).  It is an
@@ -45,7 +45,7 @@ is purportedly much slower and I have not yet tried that.
 
 - MySQL 5.5<br/>
 [MySQL](http://www.mysql.com/) is required (although a bit heavy handed in retrospect).
-I installed it on the Pi using apt-get as the package manager.
+I installed it on the Pi using `apt-get install`.
 You will also need to create an empty database, which can just be "brewninja",
 or something else which you can customize in your Hibernate config file.
 Additionally create a user which can access that database (S/I/U/D privileges).
@@ -104,7 +104,7 @@ Finally, to run, you use the [exec-maven-plugin](http://mojo.codehaus.org/exec-m
 mvn exec:java -Dproperties=<keyword_for_config_files>
 ```
 
-In addition, once installed, the [`brewninja`](https://github.com/jcreason/brewninja/blob/master/brewninja)
+In addition, once installed, the [`brewninja`](https://github.com/jcreason/brewninja/blob/master/misc/brewninja)
 startup service script can be configured and used to create a system
 service that allows brewninja to start on system boot at the desired
 boot level.
