@@ -26,7 +26,7 @@
 
 	<groupId>com.europabrewing</groupId>
 	<artifactId>brewninja</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1.1</version>
 	<name>BrewNinja</name>
 
 	<organization>
