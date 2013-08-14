@@ -16,8 +16,10 @@ Temperature data is read in using waterproof
 [DS18B20's](http://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing)
 sensors attached to a one wire interface.
 
-<i>This project is still in active development.
-The master branch is the stable branch.
+<i><b>NOTE:</b> This project is still in active development.
+The master branch with SNAPSHOT versions should be relatively stable,
+but use the latest tagged version (like [v0.1.1](https://github.com/jcreason/brewninja/releases/tag/v0.1.1))
+if you want to be sure.
 Please use the [issues](https://github.com/jcreason/brewninja/issues) page to file bugs or requests.</i>
 
 ##How to Run
