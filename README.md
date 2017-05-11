@@ -22,13 +22,13 @@ but use the latest tagged version (like [v0.1.1](https://github.com/jcreason/bre
 if you want to be sure.
 Please use the [issues](https://github.com/jcreason/brewninja/issues) page to file bugs or requests.</i>
 
-##How to Run
+## How to Run
 BrewNinja should be compiled and run on real Raspberry Pi hardware.
 The project will compile on other hardware, however, it uses the [Pi4J](http://pi4j.com/)
 library which requires the Pi's architecture.
 This means that when running on another architecture, the features of the program are severely limited.
 
-###Requirements
+### Requirements
 - Raspberry Pi<br/>
 I used [Raspbian "wheezy"](http://www.raspberrypi.org/downloads) as my install image.  All
 of this should be possible regardless of which distro you use, but do be aware of the
@@ -77,7 +77,7 @@ to the correct location where they will be read by Hibernate and Log4J-2
 at runtime.  Make sure and customize these files by adding in your database
 credentials and location and any special logging you'd like.
 
-###Running
+### Running
 Once all requirements are satisfied, change directories on your Pi to the
 location of the BrewNinja source code.
 
@@ -112,12 +112,12 @@ service that allows brewninja to start on system boot at the desired
 boot level.
 
 
-##Customizing the Data
+## Customizing the Data
 After first running the flyway migration, you can customize the burners,
 GPIOs, and temperature sensors in the database.  Currently, there is not admin
 interface to do these things.
 
-##Using the Interface
+## Using the Interface
 Once running, this should be fairly intuitive.  However, much more functionality
 will be coming in the future.
 
